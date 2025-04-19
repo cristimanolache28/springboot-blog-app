@@ -4,7 +4,7 @@ import com.blog.entity.Post;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper {
+public class PostMapper {
 
     public static PostDto convertToDto(Post post) {
         PostDto postDto = new PostDto();
