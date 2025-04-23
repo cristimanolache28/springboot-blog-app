@@ -3,16 +3,20 @@ package com.blog.service.impl;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.payload.PostDto;
-import com.blog.payload.UserMapper;
+import com.blog.payload.PostMapper;
+import com.blog.payload.PostResponse;
 import com.blog.repository.PostRepository;
 import com.blog.service.PostService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -24,16 +28,32 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto create(PostDto postDto) {
-        Post post = UserMapper.convertDtoToEntity(postDto);
+        Post post = PostMapper.convertDtoToEntity(postDto);
         postRepository.save(post);
-        return UserMapper.convertToDto(post);
+        return PostMapper.convertToDto(post);
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
 
-        return posts.stream().map(UserMapper::convertToDto).toList();
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Post> posts = postRepository.findAll(pageable);
+        List<Post> listOfPosts = posts.getContent();
+
+
+
+        List<PostDto> content = listOfPosts.stream().map(PostMapper::convertToDto).toList();
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
     }
 
     @Override
@@ -41,7 +61,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
-        return UserMapper.convertToDto(post);
+        return PostMapper.convertToDto(post);
     }
 
     @Override
@@ -63,7 +83,7 @@ public class PostServiceImpl implements PostService {
         post.setDescription(postDto.getDescription());
         postRepository.save(post);
 
-        return UserMapper.convertToDto(post);
+        return PostMapper.convertToDto(post);
 
     }
 }

@@ -36,9 +36,9 @@ public class DataInitializer implements CommandLineRunner {
 
             postRepository.saveAll(postList);
 
-            System.out.println("✅ Postări prestabilite salvate.");
+            System.out.println("Postări prestabilite salvate.");
         } else {
-            System.out.println("ℹ️ Postările există deja. Nu se inserează din nou.");
+            System.out.println("Postările există deja. Nu se inserează din nou.");
         }
     }
 }
