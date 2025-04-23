@@ -3,12 +3,12 @@ package com.blog.service.impl;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.payload.PostDto;
-import com.blog.payload.PostMapper;
 import com.blog.payload.PostResponse;
 import com.blog.repository.PostRepository;
 import com.blog.service.PostService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,12 +25,14 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public PostDto create(PostDto postDto) {
-        Post post = PostMapper.convertDtoToEntity(postDto);
+        Post post = convertDtoToEntity(postDto);
         postRepository.save(post);
-        return PostMapper.convertToDto(post);
+        return convertToDto(post);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class PostServiceImpl implements PostService {
 
 
 
-        List<PostDto> content = listOfPosts.stream().map(PostMapper::convertToDto).toList();
+        List<PostDto> content = listOfPosts.stream().map(this::convertToDto).toList();
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(content);
         postResponse.setPageNo(posts.getNumber());
@@ -61,7 +63,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
-        return PostMapper.convertToDto(post);
+        return modelMapper.map(post, PostDto.class);
     }
 
     @Override
@@ -83,7 +85,15 @@ public class PostServiceImpl implements PostService {
         post.setDescription(postDto.getDescription());
         postRepository.save(post);
 
-        return PostMapper.convertToDto(post);
+        return convertToDto(post);
 
+    }
+
+    private PostDto convertToDto(Post post) {
+        return modelMapper.map(post, PostDto.class);
+    }
+
+    private Post convertDtoToEntity(PostDto postDto){
+        return modelMapper.map(postDto, Post.class);
     }
 }

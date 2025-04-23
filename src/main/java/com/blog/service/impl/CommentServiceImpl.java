@@ -4,10 +4,11 @@ import com.blog.entity.Comment;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.payload.CommentDto;
-import com.blog.payload.CommentMapper;
 import com.blog.repository.CommentRepository;
 import com.blog.repository.PostRepository;
 import com.blog.service.CommentService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,19 +16,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-
-
+    @Autowired
     private CommentRepository commentRepository;
+    @Autowired
     private PostRepository postRepository;
-
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository) {
-        this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
-    }
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public CommentDto createComment(Long postId, CommentDto commentDto) {
-        Comment comment = CommentMapper.mapDtoToEntity(commentDto);
+        Comment comment = mapDtoToEntity(commentDto);
 
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
@@ -35,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 
         comment.setPost(post);
         commentRepository.save(comment);
-        return CommentMapper.mapToDto(comment);
+        return mapToDto(comment);
     }
 
     @Override
@@ -47,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findCommentsByPostId(post.getId());
 
         return comments.stream()
-                .map(CommentMapper::mapToDto)
+                .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
@@ -64,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getPost().getId().equals(postId)) {
             throw new ResourceNotFoundException("Comentariul nu apartine postarii specifica.");
         }
-        return CommentMapper.mapToDto(comment);
+        return mapToDto(comment);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepository.save(comment);
         }
 
-        return CommentMapper.mapToDto(comment);
+        return mapToDto(comment);
     }
 
     @Override
@@ -97,6 +95,14 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.deleteById(commentId);
         return "The comment was deleted.";
+    }
+
+    private CommentDto mapToDto(Comment comment){
+        return modelMapper.map(comment, CommentDto.class);
+    }
+
+    private Comment mapDtoToEntity(CommentDto commentDto){
+        return modelMapper.map(commentDto, Comment.class);
     }
 }
 
