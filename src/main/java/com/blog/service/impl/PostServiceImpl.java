@@ -23,13 +23,12 @@ import java.util.List;
 @NoArgsConstructor
 @Service
 public class PostServiceImpl implements PostService {
-    @Autowired
     private PostRepository postRepository;
-    @Autowired
     private ModelMapper modelMapper;
 
+
     @Override
-    public PostDto create(PostDto postDto) {
+    public PostDto createPost(PostDto postDto) {
         Post post = convertDtoToEntity(postDto);
         postRepository.save(post);
         return convertToDto(post);

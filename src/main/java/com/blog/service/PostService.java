@@ -6,7 +6,7 @@ import com.blog.payload.PostResponse;
 import java.util.List;
 
 public interface PostService {
-    PostDto create(PostDto postDto);
+    PostDto createPost(PostDto postDto);
     PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir);
     PostDto getPostById(Long id);
     String deleteById(Long id);
