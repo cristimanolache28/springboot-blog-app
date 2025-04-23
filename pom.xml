@@ -17,6 +17,7 @@
 
 	<properties>
 		<java.version>17</java.version>
+		<modelmapper.version>3.2.0</modelmapper.version>
 	</properties>
 
 	<dependencies>
@@ -43,6 +44,11 @@
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
