@@ -3,28 +3,27 @@ package com.blog.service.impl;
 import com.blog.entity.Comment;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
-import com.blog.payload.CommentDto;
 import com.blog.repository.CommentRepository;
 import com.blog.repository.PostRepository;
 import com.blog.service.CommentService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Service
 public class CommentServiceImpl implements CommentService {
-    @Autowired
     private CommentRepository commentRepository;
-    @Autowired
     private PostRepository postRepository;
-    @Autowired
     private ModelMapper modelMapper;
 
     @Override
-    public CommentDto createComment(Long postId, CommentDto commentDto) {
+    public com.blog.payload.CommentDto createComment(Long postId, com.blog.payload.CommentDto commentDto) {
         Comment comment = mapDtoToEntity(commentDto);
 
         Post post = postRepository.findById(postId).orElseThrow(
@@ -37,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> getCommentsByPostId(Long postId) {
+    public List<com.blog.payload.CommentDto> getCommentsByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
@@ -50,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto getCommentById(Long postId, Long commentId) {
+    public com.blog.payload.CommentDto getCommentById(Long postId, Long commentId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
@@ -66,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateComment(Long postId, Long commentId, CommentDto commentDto) {
+    public com.blog.payload.CommentDto updateComment(Long postId, Long commentId, com.blog.payload.CommentDto commentDto) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
@@ -97,11 +96,11 @@ public class CommentServiceImpl implements CommentService {
         return "The comment was deleted.";
     }
 
-    private CommentDto mapToDto(Comment comment){
-        return modelMapper.map(comment, CommentDto.class);
+    private com.blog.payload.CommentDto mapToDto(Comment comment){
+        return modelMapper.map(comment, com.blog.payload.CommentDto.class);
     }
 
-    private Comment mapDtoToEntity(CommentDto commentDto){
+    private Comment mapDtoToEntity(com.blog.payload.CommentDto commentDto){
         return modelMapper.map(commentDto, Comment.class);
     }
 }
