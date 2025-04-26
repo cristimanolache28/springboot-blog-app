@@ -6,10 +6,7 @@ import com.blog.payload.PostDto;
 import com.blog.payload.PostResponse;
 import com.blog.repository.PostRepository;
 import com.blog.service.PostService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +16,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Service
 public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private ModelMapper modelMapper;
 
+    public PostServiceImpl(PostRepository postRepository, ModelMapper modelMapper) {
+        this.postRepository = postRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public PostDto createPost(PostDto postDto) {
