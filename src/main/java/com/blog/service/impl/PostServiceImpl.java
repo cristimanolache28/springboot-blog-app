@@ -82,7 +82,6 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
 
         return convertToDto(post);
-
     }
 
     //TODO: rename function to mapToDto
