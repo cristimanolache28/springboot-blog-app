@@ -1,5 +1,6 @@
 package com.blog.utils;
 
+import com.blog.entity.Category;
 import com.blog.entity.Post;
 import com.blog.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+
+
         if (postRepository.count() == 0) {
             List<Post> postList = List.of(
                     new Post("Titlu 1", "Descriere 1", "Continut 1"),

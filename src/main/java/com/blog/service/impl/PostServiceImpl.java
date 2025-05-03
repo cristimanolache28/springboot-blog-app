@@ -1,9 +1,11 @@
 package com.blog.service.impl;
 
+import com.blog.entity.Category;
 import com.blog.entity.Post;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.payload.PostDto;
 import com.blog.payload.PostResponse;
+import com.blog.repository.CategoryRepository;
 import com.blog.repository.PostRepository;
 import com.blog.service.PostService;
 import org.modelmapper.ModelMapper;
@@ -21,15 +23,21 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private ModelMapper modelMapper;
+    private CategoryRepository categoryRepository;
 
-    public PostServiceImpl(PostRepository postRepository, ModelMapper modelMapper) {
+    public PostServiceImpl(PostRepository postRepository, ModelMapper modelMapper, CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.modelMapper = modelMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
     public PostDto createPost(PostDto postDto) {
+        Category category = categoryRepository.findById(postDto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
+
         Post post = convertDtoToEntity(postDto);
+        post.setCategory(category);
         postRepository.save(post);
         return convertToDto(post);
     }
@@ -76,9 +84,14 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("The post doesn't exist.")
         );
+
+        Category category = categoryRepository.findById(postDto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
+
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
         post.setDescription(postDto.getDescription());
+        post.setCategory(category);
         postRepository.save(post);
 
         return convertToDto(post);
@@ -90,7 +103,6 @@ public class PostServiceImpl implements PostService {
     }
 
     //TODO: rename function to mapToEntity
-    private Post convertDtoToEntity(PostDto postDto){
-        return modelMapper.map(postDto, Post.class);
+    private Post convertDtoToEntity(PostDto postDto){return modelMapper.map(postDto, Post.class);
     }
 }

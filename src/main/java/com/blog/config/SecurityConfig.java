@@ -49,8 +49,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->
                     authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                             .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                             .anyRequest().authenticated()
+                            .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/categories/**").authenticated()
+                            .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                            .anyRequest().authenticated()
+
                 ).exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 ).sessionManagement(session -> session
